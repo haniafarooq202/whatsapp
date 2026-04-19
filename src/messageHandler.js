@@ -24,8 +24,9 @@ class MessageHandler {
       const messageBody = message.body;
       const normalizedText = Utils.normalizeMessage(messageBody);
       const senderNumber = message.from;
-      
+
       logger.info(`Message from ${Utils.formatPhoneNumber(senderNumber)}: ${messageBody}`);
+      logger.info(`Normalized text: ${normalizedText}`);
 
       const isGroup = senderNumber.includes('@g.us');
       logger.debug(`Is group message: ${isGroup}`);
@@ -36,9 +37,12 @@ class MessageHandler {
       }
 
       const subjectCode = Utils.extractSubjectCode(normalizedText, config.SUBJECT_PATTERN);
-      
+      logger.info(`Extracted subject code: ${subjectCode}`);
+
       if (subjectCode) {
         await this.handleSubjectRequest(message, subjectCode);
+      } else {
+        logger.info('No subject code found in message');
       }
 
     } catch (error) {
@@ -71,22 +75,26 @@ class MessageHandler {
 
   findHandoutFile(subjectCode) {
     const files = fs.readdirSync(this.handoutsDir);
-    
+    logger.info(`Searching for ${subjectCode} in ${files.length} files`);
+
     for (const file of files) {
       const fileName = path.parse(file).name;
       const ext = path.parse(file).ext.toLowerCase();
-      
+
       if (!config.SUPPORTED_EXTENSIONS.includes(ext)) {
         continue;
       }
-      
+
       const extractedCode = Utils.extractSubjectCode(fileName.toLowerCase(), config.SUBJECT_PATTERN);
-      
+      logger.debug(`Checking file: ${file}, extracted code: ${extractedCode}`);
+
       if (extractedCode === subjectCode) {
+        logger.info(`Found matching file: ${file}`);
         return path.join(this.handoutsDir, file);
       }
     }
-    
+
+    logger.info(`No file found for ${subjectCode}`);
     return null;
   }
 
