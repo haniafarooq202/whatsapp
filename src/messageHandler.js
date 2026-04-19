@@ -36,7 +36,7 @@ class MessageHandler {
         return;
       }
 
-      // Check if message contains 'handouts'
+      // Check if message contains 'handouts' - required to send files
       const hasHandoutsKeyword = normalizedText.includes('handouts');
       logger.info(`Contains 'handouts': ${hasHandoutsKeyword}`);
 
