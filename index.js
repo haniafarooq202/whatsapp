@@ -7,14 +7,23 @@ const bot = new Bot();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Store QR code in memory
+let qrCodeData = null;
+
+// Set QR code data from bot
+bot.setQRCodeData = (data) => {
+  qrCodeData = data;
+  logger.info('QR code data stored in memory');
+};
+
 // Serve QR code
 app.get('/qr.png', (req, res) => {
-  const qrPath = '/tmp/qr.png';
-  res.sendFile(qrPath, (err) => {
-    if (err) {
-      res.status(404).send('QR code not found. Bot may not be ready yet.');
-    }
-  });
+  if (!qrCodeData) {
+    res.status(404).send('QR code not generated yet. Bot is still starting...');
+    return;
+  }
+  res.setHeader('Content-Type', 'image/png');
+  res.send(qrCodeData);
 });
 
 // Health check

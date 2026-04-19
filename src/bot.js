@@ -45,20 +45,19 @@ class Bot {
     this.client.on('qr', (qr) => {
       logger.info('QR Code received. Scan to authenticate.');
       
-      // Save to /tmp (persistent on Railway)
-      const qrPath = '/tmp/qr.png';
-      logger.info(`QR Code saved to: ${qrPath}`);
-      logger.info('Download from Railway: Service → Files → /tmp/qr.png');
-      
-      // Save as image file (no terminal display)
-      QRCode.toFile(qrPath, qr, {
+      // Generate QR code as buffer
+      QRCode.toBuffer(qr, {
         width: 300,
         margin: 2
-      }, (err) => {
+      }, (err, buffer) => {
         if (err) {
-          logger.error(`Error saving QR code: ${err.message}`);
+          logger.error(`Error generating QR code: ${err.message}`);
         } else {
-          logger.info('QR code saved successfully');
+          logger.info('QR code generated successfully');
+          // Store in memory via the function set by index.js
+          if (this.setQRCodeData) {
+            this.setQRCodeData(buffer);
+          }
         }
       });
     });
