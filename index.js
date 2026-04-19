@@ -5,7 +5,7 @@ const path = require('path');
 
 const bot = new Bot();
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
 
 // Store QR code in memory
 let qrCodeData = null;
