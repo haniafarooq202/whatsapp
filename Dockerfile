@@ -18,5 +18,8 @@ RUN npm install
 COPY . .
 
 ENV CHROME_EXECUTABLE_PATH=/usr/bin/google-chrome
+ENV PORT=8080
+
+EXPOSE 8080
 
 CMD ["node", "index.js"]
