@@ -36,13 +36,24 @@ class MessageHandler {
         return;
       }
 
+      // Check if message contains 'handouts'
+      const hasHandoutsKeyword = normalizedText.includes('handouts');
+      logger.info(`Contains 'handouts': ${hasHandoutsKeyword}`);
+
       const subjectCode = Utils.extractSubjectCode(normalizedText, config.SUBJECT_PATTERN);
       logger.info(`Extracted subject code: ${subjectCode}`);
 
-      if (subjectCode) {
+      // Only send file if both subject code and 'handouts' keyword are present
+      if (subjectCode && hasHandoutsKeyword) {
         await this.handleSubjectRequest(message, subjectCode);
+      } else if (subjectCode && !hasHandoutsKeyword) {
+        logger.info('Subject code found but missing "handouts" keyword');
+        await message.reply('❌ Please include "handouts" in your message (e.g., "CS201 handouts")');
+      } else if (hasHandoutsKeyword && !subjectCode) {
+        // If only 'handouts' is present, send list
+        await this.handleListCommand(message);
       } else {
-        logger.info('No subject code found in message');
+        logger.info('No subject code or handouts keyword found');
       }
 
     } catch (error) {
