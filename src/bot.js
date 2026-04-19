@@ -1,5 +1,4 @@
 const { Client, LocalAuth } = require('whatsapp-web.js');
-const qrcodeTerminal = require('qrcode-terminal');
 const QRCode = require('qrcode');
 const fs = require('fs');
 const path = require('path');
@@ -49,11 +48,9 @@ class Bot {
       // Save to /tmp (persistent on Railway)
       const qrPath = '/tmp/qr.png';
       logger.info(`QR Code saved to: ${qrPath}`);
+      logger.info('Download from Railway: Service → Files → /tmp/qr.png');
       
-      // Display in terminal
-      qrcodeTerminal.generate(qr, { small: true });
-      
-      // Save as image file
+      // Save as image file (no terminal display)
       QRCode.toFile(qrPath, qr, {
         width: 300,
         margin: 2
@@ -62,7 +59,6 @@ class Bot {
           logger.error(`Error saving QR code: ${err.message}`);
         } else {
           logger.info('QR code saved successfully');
-          logger.info('Download from Railway: Service → Files → /tmp/qr.png');
         }
       });
     });
