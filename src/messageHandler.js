@@ -31,29 +31,26 @@ class MessageHandler {
       const isGroup = senderNumber.includes('@g.us');
       logger.debug(`Is group message: ${isGroup}`);
 
-      if (normalizedText === 'list') {
-        await this.handleListCommand(message);
-        return;
-      }
-
-      // Check if message contains 'handouts' - required to send files
-      const hasHandoutsKeyword = normalizedText.includes('handouts');
-      logger.info(`Contains 'handouts': ${hasHandoutsKeyword}`);
-
+      // Extract subject code
       const subjectCode = Utils.extractSubjectCode(normalizedText, config.SUBJECT_PATTERN);
       logger.info(`Extracted subject code: ${subjectCode}`);
 
-      // Only send file if both subject code and 'handouts' keyword are present
-      if (subjectCode && hasHandoutsKeyword) {
+      // Check for exact format: <SUBJECT_CODE> handouts
+      // Pattern: subject code followed by space and "handouts"
+      const correctFormatPattern = new RegExp(`^${config.SUBJECT_PATTERN.source}\\s+handouts$`, 'i');
+      const isCorrectFormat = correctFormatPattern.test(normalizedText);
+      logger.info(`Correct format: ${isCorrectFormat}`);
+
+      if (isCorrectFormat && subjectCode) {
+        // Correct format: send file
         await this.handleSubjectRequest(message, subjectCode);
-      } else if (subjectCode && !hasHandoutsKeyword) {
-        logger.info('Subject code found but missing "handouts" keyword');
-        await message.reply('❌ Please include "handouts" in your message (e.g., "CS201 handouts")');
-      } else if (hasHandoutsKeyword && !subjectCode) {
-        // If only 'handouts' is present, send list
-        await this.handleListCommand(message);
+      } else if (subjectCode) {
+        // Has subject code but wrong format
+        logger.info('Subject code found but wrong format');
+        await message.reply('❌ Please use correct format: CS201 handouts');
       } else {
-        logger.info('No subject code or handouts keyword found');
+        // No valid subject code: ignore completely
+        logger.info('No valid subject code - ignoring message');
       }
 
     } catch (error) {
