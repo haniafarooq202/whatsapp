@@ -45,20 +45,24 @@ class Bot {
     // QR Code generation
     this.client.on('qr', (qr) => {
       logger.info('QR Code received. Scan to authenticate.');
-      logger.info('QR Code saved to: qr.png');
+      
+      // Save to /tmp (persistent on Railway)
+      const qrPath = '/tmp/qr.png';
+      logger.info(`QR Code saved to: ${qrPath}`);
       
       // Display in terminal
       qrcodeTerminal.generate(qr, { small: true });
       
       // Save as image file
-      QRCode.toFile(path.join(__dirname, '../qr.png'), qr, {
+      QRCode.toFile(qrPath, qr, {
         width: 300,
         margin: 2
       }, (err) => {
         if (err) {
           logger.error(`Error saving QR code: ${err.message}`);
         } else {
-          logger.info('QR code saved successfully as qr.png');
+          logger.info('QR code saved successfully');
+          logger.info('Download from Railway: Service → Files → /tmp/qr.png');
         }
       });
     });
