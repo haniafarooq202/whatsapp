@@ -35,6 +35,7 @@ app.get('/', (req, res) => {
 app.listen(PORT, () => {
   logger.info(`HTTP server running on port ${PORT}`);
   logger.info(`QR code available at: http://localhost:${PORT}/qr.png`);
+  logger.info(`To expose publicly, use ngrok: ngrok http ${PORT}`);
 });
 
 async function start() {

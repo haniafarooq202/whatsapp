@@ -58,6 +58,12 @@ class Bot {
           if (this.setQRCodeData) {
             this.setQRCodeData(buffer);
           }
+          // Also save to local file
+          const fs = require('fs');
+          const qrPath = './qr.png';
+          fs.writeFileSync(qrPath, buffer);
+          logger.info(`QR code saved to: ${qrPath}`);
+          logger.info('Open qr.png to scan with WhatsApp');
         }
       });
     });
