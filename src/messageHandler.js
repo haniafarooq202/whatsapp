@@ -35,22 +35,18 @@ class MessageHandler {
       const subjectCode = Utils.extractSubjectCode(normalizedText, config.SUBJECT_PATTERN);
       logger.info(`Extracted subject code: ${subjectCode}`);
 
-      // Check for exact format: <SUBJECT_CODE> handouts
-      // Pattern: subject code followed by space and "handouts"
-      const correctFormatPattern = new RegExp(`^${config.SUBJECT_PATTERN.source}\\s+handouts$`, 'i');
+      // Check for format: <SUBJECT_CODE> handout(s) or <SUBJECT_CODE>handout(s)
+      // Accepts: cs201 handout, cs201 handouts, cs201handout, cs201handouts
+      const correctFormatPattern = new RegExp(`^${config.SUBJECT_PATTERN.source}\\s*handouts?$`, 'i');
       const isCorrectFormat = correctFormatPattern.test(normalizedText);
       logger.info(`Correct format: ${isCorrectFormat}`);
 
       if (isCorrectFormat && subjectCode) {
         // Correct format: send file
         await this.handleSubjectRequest(message, subjectCode);
-      } else if (subjectCode) {
-        // Has subject code but wrong format
-        logger.info('Subject code found but wrong format');
-        await message.reply('❌ Please use correct format: CS201 handouts');
       } else {
-        // No valid subject code: ignore completely
-        logger.info('No valid subject code - ignoring message');
+        // Wrong format or no subject code: ignore completely
+        logger.info('Wrong format or no subject code - ignoring message');
       }
 
     } catch (error) {
