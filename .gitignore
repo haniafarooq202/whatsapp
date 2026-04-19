@@ -1,0 +1,20 @@
+# Dependencies
+node_modules/
+
+# WhatsApp session data
+.wwebjs_auth/
+
+# Logs
+logs/
+
+# Handouts files
+handouts/
+
+# Uploaded files
+uploads/
+
+# QR code
+qr.png
+
+# Environment variables
+.env

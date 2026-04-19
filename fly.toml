@@ -1,0 +1,24 @@
+app = "whatsapp-bot"
+primary_region = "iad"
+
+[build]
+  builder = "heroku/buildpacks:20"
+
+[env]
+  CHROME_EXECUTABLE_PATH = "/usr/bin/google-chrome"
+
+[[services]]
+  http_checks = []
+  internal_port = 8080
+  processes = ["app"]
+  protocol = "tcp"
+
+  [[services.concurrency]]
+    hard_limit = 25
+    soft_limit = 20
+    type = "connections"
+
+[[vm]]
+  cpu_kind = "shared"
+  cpus = 1
+  memory_mb = 256
